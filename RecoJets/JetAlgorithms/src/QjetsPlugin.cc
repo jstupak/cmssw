@@ -1,6 +1,9 @@
 #include "RecoJets/JetAlgorithms/interface/QjetsPlugin.h"
 
-using namespace std;
+QjetsPlugin::QjetsPlugin(double zcut, double dcut_fctr, double exp_min, double exp_max, double rigidity)
+  : _zcut(zcut), _dcut_fctr(dcut_fctr), _exp_min(exp_min), _exp_max(exp_max), _rigidity(rigidity), _rand_seed_set(false)
+{
+}
 
 void QjetsPlugin::SetRandSeed(unsigned int seed){
   _rand_seed_set = true;
@@ -17,8 +20,9 @@ string QjetsPlugin::description() const{
 }
 
 void QjetsPlugin::run_clustering(fastjet::ClusterSequence & cs) const{
-  Qjets qjets(_zcut, _dcut_fctr, _exp_min, _exp_max, _rigidity, _truncation_fctr, _rnEngine);
+  Qjets qjets(_zcut, _dcut_fctr, _exp_min, _exp_max, _rigidity);
   if(_rand_seed_set)
     qjets.SetRandSeed(_seed);
+  
   qjets.Cluster(cs);
 }
