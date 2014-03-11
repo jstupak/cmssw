@@ -33,7 +33,6 @@ class DTSegmentUpdator;
 // ====================================================================== 
 class DTSegmentCand;
 class DTMeantimerPatternReco;
-class DTHitPairForFit;
 
 // Class DTMeantimerPatternReco4D Interface 
 
@@ -61,8 +60,9 @@ class DTMeantimerPatternReco4D : public DTRecSegment4DBaseAlgo {
   protected:
 
   private:
-    std::vector<DTSegmentCand*> buildPhiSuperSegmentsCandidates(std::vector<std::shared_ptr<DTHitPairForFit>> &pairPhiOwned);
+    std::vector<DTSegmentCand*> buildPhiSuperSegmentsCandidates();
     DTRecSegment4D* segmentSpecialZed(DTRecSegment4D* seg);
+
 
     std::string theAlgoName;
 

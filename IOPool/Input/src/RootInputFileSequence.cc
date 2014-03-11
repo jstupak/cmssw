@@ -268,7 +268,6 @@ namespace edm {
           usingGoToEvent_,
           enablePrefetching_));
 
-      assert(rootFile_);
       fileIterLastOpened_ = fileIter_;
       indexesIntoFiles_[currentIndexIntoFile] = rootFile_->indexIntoFileSharedPtr();
       char const* inputType = 0;
@@ -354,25 +353,21 @@ namespace edm {
 
   boost::shared_ptr<RunAuxiliary>
   RootInputFileSequence::readRunAuxiliary_() {
-    assert(rootFile_);
     return rootFile_->readRunAuxiliary_();
   }
 
   boost::shared_ptr<LuminosityBlockAuxiliary>
   RootInputFileSequence::readLuminosityBlockAuxiliary_() {
-    assert(rootFile_);
     return rootFile_->readLuminosityBlockAuxiliary_();
   }
 
   void
   RootInputFileSequence::readRun_(RunPrincipal& runPrincipal) {
-    assert(rootFile_);
     rootFile_->readRun_(runPrincipal);
   }
 
   void
   RootInputFileSequence::readLuminosityBlock_(LuminosityBlockPrincipal& lumiPrincipal) {
-    assert(rootFile_);
     rootFile_->readLuminosityBlock_(lumiPrincipal);
   }
 
@@ -391,7 +386,6 @@ namespace edm {
 
   void
   RootInputFileSequence::readEvent(EventPrincipal& eventPrincipal) {
-    assert(rootFile_);
     rootFile_->readEvent(eventPrincipal);
   }
 
@@ -422,7 +416,7 @@ namespace edm {
 
   bool
   RootInputFileSequence::containedInCurrentFile(RunNumber_t run, LuminosityBlockNumber_t lumi, EventNumber_t event) const {
-    if(!rootFile_) return false;
+  if(!rootFile_) return false;
     return rootFile_->containsItem(run, lumi, event);
   }
 
@@ -458,7 +452,6 @@ namespace edm {
     // we would have to implement synchronization if a new file is opened.
     // To avoid this, just assert.
     assert(inputType_ != InputType::SecondaryFile);
-    assert(rootFile_);
     while(offset != 0) {
       bool atEnd = rootFile_->skipEvents(offset);
       if((offset > 0 || atEnd) && !nextFile()) {
@@ -497,7 +490,6 @@ namespace edm {
           fileIter_ = fileIterBegin_ + (it - indexesIntoFiles_.begin());
           initFile(false);
           // Now get the item from the correct file.
-          assert(rootFile_);
           bool found = rootFile_->goToEvent(eventID);
           assert(found);
           return true;
@@ -510,8 +502,7 @@ namespace edm {
           initFile(false);
           closedOriginalFile = true;
           if((*it)->containsItem(eventID.run(), eventID.luminosityBlock(), eventID.event())) {
-            assert(rootFile_);
-            if(rootFile_->goToEvent(eventID)) {
+            if  (rootFile_->goToEvent(eventID)) {
               return true;
             }
           }
@@ -520,7 +511,6 @@ namespace edm {
       if(closedOriginalFile) {
         fileIter_ = originalFile;
         initFile(false);
-        assert(rootFile_);
         rootFile_->setPosition(originalPosition);
       }
     }
@@ -535,7 +525,6 @@ namespace edm {
       if(!*it) {
         fileIter_ = fileIterBegin_ + (it - indexesIntoFiles_.begin());
         initFile(false);
-        assert(rootFile_);
         bool found = rootFile_->setEntryAtItem(run, lumi, event);
         if(found) {
           return true;
@@ -566,7 +555,6 @@ namespace edm {
             initFile(false);
           }
           // Now get the item from the correct file.
-          assert(rootFile_);
           found = rootFile_->setEntryAtItem(run, lumi, event);
           assert(found);
           return true;
@@ -618,8 +606,9 @@ namespace edm {
     std::vector<std::string> rules;
     rules.reserve(wantedBranches.size() + 1);
     rules.emplace_back("drop *");
-    for(std::string const& branch : wantedBranches) {
-      rules.push_back("keep " + branch + "_*");
+    for(std::vector<std::string>::const_iterator it = wantedBranches.begin(), itEnd = wantedBranches.end();
+        it != itEnd; ++it) {
+      rules.push_back("keep " + *it + "_*");
     }
     ParameterSet pset;
     pset.addUntrackedParameter("inputCommands", rules);
@@ -635,10 +624,8 @@ namespace edm {
       }
       fileIter_ = fileIterBegin_;
       initFile(false);
-      assert(rootFile_);
       rootFile_->setAtEventEntry(IndexIntoFile::invalidEntry);
     }
-    assert(rootFile_);
     rootFile_->nextEventEntry();
     bool found = rootFile_->readCurrentEvent(cache);
     if(!found) {
@@ -647,7 +634,6 @@ namespace edm {
         return false;
       }
       initFile(false);
-      assert(rootFile_);
       rootFile_->setAtEventEntry(IndexIntoFile::invalidEntry);
       return readOneSequential(cache);
     }
@@ -661,14 +647,13 @@ namespace edm {
     }
     skipBadFiles_ = false;
     if(fileIter_ == fileIterEnd_ || !rootFile_ ||
-        rootFile_->indexIntoFileIter().run() != id.run() ||
+        rootFile_->indexIntoFileIter().run() != id.run() || 
         rootFile_->indexIntoFileIter().lumi() != id.luminosityBlock()) {
       bool found = skipToItem(id.run(), id.luminosityBlock(), 0, false);
       if(!found) {
         return false;
       }
     }
-    assert(rootFile_);
     bool found = rootFile_->setEntryAtNextEventInLumi(id.run(), id.luminosityBlock());
     if(found) {
       found = rootFile_->readCurrentEvent(cache);
@@ -676,7 +661,7 @@ namespace edm {
     if(!found) {
       found = skipToItemInNewFile(id.run(), id.luminosityBlock(), 0);
       if(!found) {
-        return false;
+        return false; 
       }
       return readOneSequentialWithID(cache, id);
     }
@@ -695,7 +680,6 @@ namespace edm {
          "RootInputFileSequence::readOneSpecified(): Secondary Input files" <<
          " do not contain specified event:\n" << id << "\n";
     }
-    assert(rootFile_);
     found = rootFile_->readCurrentEvent(cache);
     assert(found);
   }
@@ -705,7 +689,6 @@ namespace edm {
     if(fileIterEnd_ == fileIterBegin_) {
       throw Exception(errors::Configuration) << "RootInputFileSequence::readOneRandom(): no input files specified for secondary input source.\n";
     }
-    assert(rootFile_);
     skipBadFiles_ = false;
     unsigned int currentSeqNumber = fileIter_ - fileIterBegin_;
     while(eventsRemainingInFile_ == 0) {
@@ -743,14 +726,13 @@ namespace edm {
     }
     skipBadFiles_ = false;
     if(fileIter_ == fileIterEnd_ || !rootFile_ ||
-        rootFile_->indexIntoFileIter().run() != id.run() ||
+        rootFile_->indexIntoFileIter().run() != id.run() || 
         rootFile_->indexIntoFileIter().lumi() != id.luminosityBlock()) {
       bool found = skipToItem(id.run(), id.luminosityBlock(), 0);
       if(!found) {
         return false;
       }
       int eventsInLumi = 0;
-      assert(rootFile_);
       while(rootFile_->setEntryAtNextEventInLumi(id.run(), id.luminosityBlock())) ++eventsInLumi;
       found = skipToItem(id.run(), id.luminosityBlock(), 0);
       assert(found);
@@ -760,7 +742,6 @@ namespace edm {
         assert(found);
       }
     }
-    assert(rootFile_);
     bool found = rootFile_->setEntryAtNextEventInLumi(id.run(), id.luminosityBlock());
     if(found) {
       found = rootFile_->readCurrentEvent(cache);
