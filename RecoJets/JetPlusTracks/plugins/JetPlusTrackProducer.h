@@ -26,13 +26,8 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
 #include "JetPlusTrackCorrector.h"
 #include "ZSPJPTJetCorrector.h"
-
-#include "DataFormats/JetReco/interface/CaloJet.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-
 
 #include <string>
 
@@ -46,9 +41,9 @@ class JetPlusTrackProducer : public edm::EDProducer {
       ~JetPlusTrackProducer();
       virtual void produce(edm::Event&, const edm::EventSetup&) override;
 
-   // ---------- private data members ---------------------------
    private:
       
+// Data      
       JetPlusTrackCorrector* mJPTalgo;
       ZSPJPTJetCorrector*       mZSPalgo; 
       edm::InputTag          src;
@@ -57,8 +52,5 @@ class JetPlusTrackProducer : public edm::EDProducer {
       bool                   vectorial_;
       bool                   useZSP;
       double                 ptCUT;
-
-      edm::EDGetTokenT<edm::View<reco::CaloJet> > input_jets_token_;
-      edm::EDGetTokenT<reco::VertexCollection> input_vertex_token_;  
-    
+      // ----------member data ---------------------------
 };
