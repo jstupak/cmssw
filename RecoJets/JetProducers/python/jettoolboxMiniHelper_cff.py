@@ -11,7 +11,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'START70_V6::All'
 
 process.chs = cms.EDFilter('CandPtrSelector', src = cms.InputTag('packedPFCandidates'), cut = cms.string('fromPV'))
-"""
+
 process.load('RecoJets.Configuration.RecoPFJets_cff')
 process.load('RecoJets.Configuration.RecoGenJets_cff')
 
@@ -25,24 +25,18 @@ process.ca8PFJetsCHS = process.ca4PFJets.clone(src = 'chs', doAreaFastjet = True
 process.ak4GenJets.src = 'packedGenParticles'
 process.ak8GenJets = process.ak4GenJets.clone(src = 'packedGenParticles', rParam = 0.8)
 process.ca8GenJets = process.ca4GenJets.clone(src = 'packedGenParticles', rParam = 0.8)
-"""
 
-#from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets
-#from RecoJets.JetProducers.ca4PFJets_cfi import ca4PFJets
-#from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
-#from RecoJets.JetProducers.ca4GenJets_cfi import ca4GenJets
+process.fixedGridRhoFastjetAll.pfCandidatesTag = 'packedPFCandidates'
 
-from RecoJets.Configuration.RecoPFJets_cff import *
-from RecoJets.Configuration.RecoGenJets_cff import *
+process.ak8PFJetsCHSPruned.src = 'chs'
+process.ak8PFJetsCHSTrimmed.src = 'chs'
+process.ak8PFJetsCHSFiltered.src = 'chs'
 
-process.ak4PFJets    = ak4PFJets.clone(src = 'packedPFCandidates', doAreaFastjet = True) # no idea while doArea is false by default, but it's True in RECO so we have to set it
-process.ak4PFJetsCHS = ak4PFJets.clone(src = 'chs', doAreaFastjet = True) # no idea while doArea is false by default, but it's True in RECO so we have to set it
-process.ak8PFJetsCHS = ak4PFJets.clone(src = 'chs',                doAreaFastjet = True, rParam=0.8)
-process.ca8PFJetsCHS = ca4PFJets.clone(src = 'chs',                doAreaFastjet = True, rParam=0.8)
+process.ca8PFJetsCHSPruned.src = 'chs'
+process.ca8PFJetsCHSTrimmed.src = 'chs'
+process.ca8PFJetsCHSFiltered.src = 'chs'
 
-process.ak4GenJets = ak4GenJets.clone(src = 'packedGenParticles')
-process.ak8GenJets = ak4GenJets.clone(src = 'packedGenParticles', rParam=0.8)
-process.ca8GenJets = ca4GenJets.clone(src = 'packedGenParticles', rParam=0.8)
+process.cmsTopTagPFJetsCHS.src = 'chs'
 
 from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
 from PhysicsTools.PatAlgos.tools.jetTools import switchJetCollection
@@ -150,17 +144,15 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.options.allowUnscheduled = cms.untracked.bool(True)
 
 process.out = cms.OutputModule('PoolOutputModule',
-    fileName = cms.untracked.string('jettoolbox.root'),
-    outputCommands = cms.untracked.vstring([#'keep *_ak4PFJets_*_*',
-                                            #'keep *_patJets_*_*',
-                                            'keep *_ak4PFJetsCHS_*_*',
-                                            'keep *_patJetsAK4PFCHS_*_*',
-                                            'keep *_ca8PFJetsCHS_*_*',
-                                            'keep *_patJetsCA8PFCHS_*_*',
-                                            'keep *_ak8PFJetsCHS_*_*',
-                                            'keep *_patJetsAK8PFCHS_*_*',
-                                            ])
-)
+                               fileName = cms.untracked.string('jettoolbox.root'),
+                               outputCommands = cms.untracked.vstring(['keep *_ak4PFJetsCHS_*_*',
+                                                                       'keep *_patJetsAK4PFCHS_*_*',
+                                                                       'keep *_ca8PFJetsCHS_*_*',
+                                                                       'keep *_patJetsCA8PFCHS_*_*',
+                                                                       'keep *_ak8PFJetsCHS_*_*',
+                                                                       'keep *_patJetsAK8PFCHS_*_*',
+                                                                       ])
+                               )
 process.endpath = cms.EndPath(process.out)
 
 
