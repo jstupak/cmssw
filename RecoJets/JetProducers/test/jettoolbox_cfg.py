@@ -1,6 +1,6 @@
-miniAOD=True
+miniAODInput=True
 
-if miniAOD:
+if miniAODInput:
     from RecoJets.JetProducers.jettoolboxMiniHelper_cff import *
 else:
     from RecoJets.JetProducers.jettoolboxHelper_cff import *
@@ -18,14 +18,16 @@ process.pileupJetIdEvaluator.rho = cms.InputTag("fixedGridRhoFastjetAll")
 process.patJetsAK4PFCHS.userData.userFloats.src += ['pileupJetIdEvaluator:fullDiscriminant']
 process.patJetsAK4PFCHS.userData.userInts.src += ['pileupJetIdEvaluator:cutbasedId','pileupJetIdEvaluator:fullId']
 process.out.outputCommands += ['keep *_pileupJetIdEvaluator_*_*']
-
+"""
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #QGTagger
-
+"""
 process.load('RecoJets.JetProducers.QGTagger_cfi')
 
 process.QGTagger.srcJets = cms.InputTag("ak4PFJetsCHS")
 process.QGTagger.jetsLabel = cms.string('QGL_AK5PFchs')
+
+if miniAODInput: process.QGTagger.srcVertexCollection = 'unpackedTracksAndVertices'
 
 process.patJetsAK4PFCHS.userData.userFloats.src += ['QGTagger:qgLikelihood']
 process.out.outputCommands += ['keep *_QGTagger_*_*']
@@ -109,9 +111,9 @@ process.out.outputCommands += ['keep *_cmsTopTagPFJetsCHSLinksAK8_*_*']
 #   process.GlobalTag.globaltag =  ...    ##  (according to https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideFrontierConditions)
 #                                         ##
 
-if miniAOD:
+if miniAODInput:
     process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring("file:/uscms/home/jstupak/miniAOD2/CMSSW_7_0_6/src/miniAOD-prod_PAT.root")
+                                fileNames = cms.untracked.vstring('/store/user/jstupak/ZH_HToBB_ZToLL_M-125_13TeV_powheg-herwigpp/Spring14dr-PU_S14_POSTLS170_V6AN1-v1/140622_185946/0000/miniAOD-prod_PAT_1.root')
                                 )
 else:
     from PhysicsTools.PatAlgos.patInputFiles_cff import filesRelValProdTTbarAODSIM
