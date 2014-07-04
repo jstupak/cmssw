@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process('mini')
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process = cms.Process('jetToolbox')
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
 process.load('PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff')
 process.load('Configuration.EventContent.EventContent_cff')
@@ -155,12 +155,6 @@ process.out = cms.OutputModule('PoolOutputModule',
                                )
 process.endpath = cms.EndPath(process.out)
 
-
-
-
-
-
-#TMP
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring("file:/uscms/home/jstupak/miniAOD2/CMSSW_7_0_6/src/miniAOD-prod_PAT.root")
+                            fileNames = cms.untracked.vstring('/store/user/jstupak/ZH_HToBB_ZToLL_M-125_13TeV_powheg-herwigpp/Spring14dr-PU_S14_POSTLS170_V6AN1-v1/140622_185946/0000/miniAOD-prod_PAT_1.root')
                             )

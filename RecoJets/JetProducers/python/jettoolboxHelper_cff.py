@@ -55,9 +55,16 @@ switchJetCollection(
                           ],
     )
 
+from PhysicsTools.PatAlgos.patInputFiles_cff import filesRelValProdTTbarAODSIM
+process.source.fileNames = filesRelValProdTTbarAODSIM
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+
 process.out.outputCommands += ['keep *_ak4PFJetsCHS_*_*',
                                'keep *_patJetsAK4PFCHS_*_*',
                                'keep *_ca8PFJetsCHS_*_*',
                                'keep *_patJetsCA8PFCHS_*_*',
                                'keep *_ak8PFJetsCHS_*_*',
                                'keep *_patJetsAK8PFCHS_*_*']
+
+process.out.fileName = 'jettoolbox.root'
